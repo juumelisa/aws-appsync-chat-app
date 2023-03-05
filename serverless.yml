@@ -1,0 +1,64 @@
+service: aws-appsync-chat
+frameworkVersion: '3'
+
+custom:
+  ddbTableName: 'chat-table'
+  appSync:
+    - name: 'chat-room'
+      schema: schema.api.graphql
+      authenticationType: AWS_LAMBDA
+      lambdaAuthorizerConfig:
+        functionName: lambdaAuthorizer
+      mappingTemplatesLocation: mapping-templates
+      mappingTemplates: ${file(./Resources/AppSyncResources/AppSyncMappingTemplates.yml)}
+      dataSources:
+        - type: AMAZON_DYNAMODB
+          name: chat-table
+          config:
+            tableName: ${self:custom.ddbTableName}
+
+plugins:
+  - serverless-appsync-plugin
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-2
+  stage: ${opt:stage, 'dev'}
+  versionFunctions: false
+  environment:
+    TABLE_NAME: ${self:custom.ddbTableName}
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:DeleteItem
+            - dynamodb:UpdateItem
+            - dynamodb:BatchWriteItem
+          Resource:
+            - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${self:custom.ddbTableName}'
+
+resources:
+  Resources:
+    chatTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.ddbTableName}
+        AttributeDefinitions:
+          - AttributeName: roomType
+            AttributeType: S
+          - AttributeName: roomId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: roomType
+            KeyType: HASH
+          - AttributeName: roomId
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
