@@ -2,9 +2,9 @@ service: aws-appsync-chat
 frameworkVersion: '3'
 
 custom:
-  ddbTableName: 'chat-table'
+  ddbTableName: 'chatTable'
   appSync:
-    - name: 'chat-room'
+    - name: 'chatRoom'
       schema: schema.api.graphql
       authenticationType: AWS_LAMBDA
       lambdaAuthorizerConfig:
@@ -13,7 +13,7 @@ custom:
       mappingTemplates: ${file(./Resources/AppSyncResources/AppSyncMappingTemplates.yml)}
       dataSources:
         - type: AMAZON_DYNAMODB
-          name: chat-table
+          name: ChatRoom
           config:
             tableName: ${self:custom.ddbTableName}
 
@@ -22,8 +22,8 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs18.x
-  region: ap-southeast-2
+  runtime: nodejs14.x
+  region: ap-southeast-1
   stage: ${opt:stage, 'dev'}
   versionFunctions: false
   environment:
@@ -62,3 +62,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+functions:
+  lambdaAuthorizer:
+    handler: functions/lambdaAuthorizer.handler

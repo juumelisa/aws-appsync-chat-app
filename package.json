@@ -1,15 +1,24 @@
 {
-  "name": "aws-appsync-chat",
+  "name": "aws-appsync-chat-app",
   "version": "1.0.0",
   "description": "<!-- title: 'AWS NodeJS Example' description: 'This template demonstrates how to deploy a NodeJS function running on AWS Lambda using the traditional Serverless Framework.' layout: Doc framework: v3 platform: AWS language: nodeJS priority: 1 authorLink: 'https://github.com/serverless' authorName: 'Serverless, inc.' authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4' -->",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juumelisa/aws-appsync-chat-app.git"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juumelisa/aws-appsync-chat-app/issues"
+  },
+  "homepage": "https://github.com/juumelisa/aws-appsync-chat-app#readme",
   "devDependencies": {
-    "serverless-appsync-plugin": "^2.0.0"
+    "serverless": "^3.28.1",
+    "serverless-appsync-plugin": "^1.14.0"
   }
 }

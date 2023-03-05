@@ -1,0 +1,120 @@
+schema {
+  query: Query
+  mutation: Mutation
+  # subscription: Subscription
+}
+
+type Query {
+  getChatRoom(receiver: String, nextToken: String): Chat
+  # getDepoWd(brandId: String!, transactionType: String): LiveReport
+  # @aws_api_key @aws_lambda
+  # getGlobalNotif(brandId: String!, receiver: String): ListNotification
+  # @aws_api_key @aws_lambda
+}
+
+type Mutation {
+  sendChat(input: MessageInput!): ChatMessage
+#   createNewBalance(input: NewBalanceInput!): NewBalance
+#   @aws_iam
+#   depoWdGlobalNotif(input: DepoWdData!): DepoWdNotif
+#   @aws_iam @aws_api_key
+#   createNotification(input: NotificationData!): GlobalNotification
+#   @aws_iam
+}
+
+# type Subscription {
+#   incomingChat(id: String!): ChatMessage
+#     @aws_subscribe(mutations: ["sendChat"])
+#   newBalance(brandUsername: String!): NewBalance
+#     @aws_subscribe(mutations: ["createNewBalance"])
+#   depoWdNotif(brandId: String!, transactionType: TransactionType): DepoWdNotif
+#     @aws_subscribe(mutations: ["depoWdGlobalNotif"])
+#   @aws_api_key @aws_lambda
+#   globalNotif(brandId: String!, receiver: String): GlobalNotification
+#     @aws_subscribe(mutations: ["createNotification"])
+#   @aws_api_key
+#   @aws_lambda
+# }
+
+input MessageInput {
+  id: String!
+  message: String!
+}
+
+# input NewBalanceInput {
+#   brandUsername: String!
+#   activeWallet: String!
+#   walletBalance: AWSJSON!
+# }
+
+# input DepoWdData {
+#   brandId: String
+#   username: String
+#   currency: String
+#   currencyLogo: String
+#   amount: Float
+#   transactionType: TransactionType
+# }
+
+# input NotificationData {
+#   receiver: String
+#   message: String
+#   expDate: Int
+#   automaticDelete: Boolean
+#   brandId: String
+#   createdBy: String
+# }
+
+type ChatMessage {
+  roomType: ID!
+  roomId: String!
+  sender: String!
+  receiver: String!
+  message: String!
+  sendAt: AWSDateTime!
+  expDate: Int,
+  isAdmin: Boolean,
+  chatId: String!
+}
+
+# type NewBalance @aws_iam @aws_lambda {
+#   brandUsername: String
+#   activeWallet: String
+#   walletBalance: AWSJSON
+# }
+
+type Chat {
+  chats: [ChatMessage],
+  nextToken: String
+}
+
+# type GlobalNotification @aws_iam @aws_lambda @aws_api_key {
+#   receiver: String!
+#   message: String!
+#   expDate: Int
+#   brandId: String!
+#   sk: String
+# }
+
+# type DepoWdNotif @aws_iam @aws_api_key @aws_lambda {
+#   brandId: String
+#   username: String
+#   currency: String
+#   currencyLogo: String
+#   transactionDate: AWSDateTime
+#   amount: Float
+#   transactionType: String
+# }
+
+# type LiveReport @aws_iam @aws_api_key @aws_lambda {
+#   report: [DepoWdNotif]
+# }
+
+# type ListNotification @aws_api_key @aws_lambda {
+#   notification: [GlobalNotification]
+# }
+
+# enum TransactionType {
+#   DEPOSIT
+#   WITHDRAW
+# }
