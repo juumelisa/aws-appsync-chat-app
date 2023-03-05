@@ -10,7 +10,17 @@ custom:
       lambdaAuthorizerConfig:
         functionName: lambdaAuthorizer
       mappingTemplatesLocation: mapping-templates
-      mappingTemplates: ${file(./Resources/AppSyncResources/AppSyncMappingTemplates.yml)}
+      mappingTemplates:
+        - dataSource: ChatRoom
+          type: Mutation
+          field: sendChat
+          request: "Mutation.sendChat.request.vtl"
+          response: "Mutation.sendChat.response.vtl"
+        - dataSource: ChatRoom
+          type: Query
+          field: getChatRoom
+          request: "Query.getChatRoom.request.vtl"
+          response: "Query.getChatRoom.response.vtl"
       dataSources:
         - type: AMAZON_DYNAMODB
           name: ChatRoom

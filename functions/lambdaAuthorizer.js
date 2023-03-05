@@ -2,10 +2,7 @@
 
 module.exports.handler = async (event) => {
 	try{
-		const {
-			authorizationToken,
-		} = event;
-		let auth;
+		const { authorizationToken } = event;
 		const response = {
 			isAuthorized: false,
 			resolverContext: {

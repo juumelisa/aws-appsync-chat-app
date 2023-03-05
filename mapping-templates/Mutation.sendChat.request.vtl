@@ -1,23 +1,20 @@
 #set($combineSign = "#")
-#set($sender = $ctx.identity.resolverContext.brandUsername)
+#set($sender = $ctx.identity.resolverContext.username)
 #set($sendAt = $util.time.nowISO8601())
-#set($sk = "$sender$combineSign$sendAt")
-#set($epochNow = $util.time.nowEpochSeconds())
-#set($expDate = $epochNow + 1440000)
+#set($roomId = "$sender$combineSign$sendAt")
 
 {
   "version" : "2017-02-28",
   "operation": "PutItem",
   "key": {
-    "pk" : $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+    "roomType" : $util.dynamodb.toDynamoDBJson('chatRoom')
   },
   "attributeValues" : {
-    "sk": $util.dynamodb.toDynamoDBJson($sk),
+    "roomId": $util.dynamodb.toDynamoDBJson($roomId),
     "id": $util.dynamodb.toDynamoDBJson($ctx.args.input.id),
     "message": $util.dynamodb.toDynamoDBJson($ctx.args.input.message),
     "sender": $util.dynamodb.toDynamoDBJson($sender),
     "receiver": $utils.dynamodb.toDynamoDBJson($ctx.args.input.id),
     "sendAt" : $util.dynamodb.toDynamoDBJson($sendAt),
-    "expDate": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601())
   }
 }
