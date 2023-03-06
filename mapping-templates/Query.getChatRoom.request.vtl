@@ -2,7 +2,7 @@
   "version" : "2017-02-28",
   "operation" : "Query",
   "query" : {
-    "expression": "roomType = :roomType, begins_with(roomId, :roomId)",
+    "expression": "roomType = :roomType AND begins_with(roomId, :roomId)",
     "expressionValues" : {
       ":roomType" : $util.dynamodb.toDynamoDBJson($context.identity.resolverContext.username),
       ":roomId" : $util.dynamodb.toDynamoDBJson($ctx.args.friendUsername)
