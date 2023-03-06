@@ -4,7 +4,7 @@ schema {
 }
 
 type Query {
-  getChatRoom(receiver: String, nextToken: String): Chat
+  getChatRoom(friendUsername: String!, nextToken: String): Chat
   getDMList(limit: Int, nextToken: String): Chat
 }
 

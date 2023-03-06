@@ -9,9 +9,9 @@
     }
   },
   "filter" : {
-      "expression" : "receiver = :user OR sender = :user",
+      "expression" : "begins_with(roomId, :user) AND (receiver = :user OR sender = :user)",
       "expressionValues" : {
-          ":user" : $util.dynamodb.toDynamoDBJson($context.identity.resolverContext.username)
+        ":user" : $util.dynamodb.toDynamoDBJson($context.identity.resolverContext.username)
       },
   },
   "scanIndexForward": false

@@ -1,25 +1,13 @@
-#set($s = $context.args.id.split("-"))
-#if($s.size() == 2 && $context.args.id != $context.identity.resolverContext.brandUsername)
-  $util.unauthorized()
-#end
 {
   "version" : "2017-02-28",
   "operation" : "Query",
   "query" : {
-    "expression": "roomType = :roomType",
+    "expression": "roomType = :roomType, begins_with(roomId, :roomId)",
     "expressionValues" : {
-      ":roomType" : $util.dynamodb.toDynamoDBJson($context.args.id)
+      ":roomType" : $util.dynamodb.toDynamoDBJson($context.identity.resolverContext.username),
+      ":roomId" : $util.dynamodb.toDynamoDBJson($ctx.args.friendUsername)
     }
   },
-  #if($context.args.otherUser && $context.args.otherUser != "")
-    "filter" : {
-      "expression" : "(sender = :userA AND receiver = :userB) OR (sender = :userB AND receiver = :userA)",
-      "expressionValues" : {
-        ":userA": $util.dynamodb.toDynamoDBJson($context.args.id),
-        ":userB" : $util.dynamodb.toDynamoDBJson($context.args.otherUser)
-      }
-    },
-  #end
   "scanIndexForward": false
   #if( ${context.arguments.count} )
       ,"limit": $util.toJson($context.arguments.count)
