@@ -1,5 +1,4 @@
 #if($ctx.error)
     $utils.error($ctx.error.message, $ctx.error.type)
 #end
-
-$utils.toJson($context.result)
+$utils.toJson($ctx.result.data.chatTable[0])

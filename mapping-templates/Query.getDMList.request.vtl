@@ -1,0 +1,24 @@
+{
+  "version" : "2017-02-28",
+  "operation" : "Query",
+  "index" : "dmIndex",
+  "query" : {
+    "expression": "roomType = :roomType",
+    "expressionValues" : {
+      ":roomType" : $util.dynamodb.toDynamoDBJson("inbox")
+    }
+  },
+  "filter" : {
+      "expression" : "receiver = :user OR sender = :user",
+      "expressionValues" : {
+          ":user" : $util.dynamodb.toDynamoDBJson($context.identity.resolverContext.username)
+      },
+  },
+  "scanIndexForward": false
+  #if( ${context.arguments.limit} )
+      ,"limit": $util.toJson($context.arguments.limit)
+  #end
+  #if( ${context.arguments.nextToken} )
+      ,"nextToken": "${context.arguments.nextToken}"
+  #end
+}

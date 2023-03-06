@@ -21,6 +21,11 @@ custom:
           field: getChatRoom
           request: "Query.getChatRoom.request.vtl"
           response: "Query.getChatRoom.response.vtl"
+        - dataSource: ChatRoom
+          type: Query
+          field: getDMList
+          request: "Query.getDMList.request.vtl"
+          response: "Query.getDMList.response.vtl"
       dataSources:
         - type: AMAZON_DYNAMODB
           name: ChatRoom
@@ -49,9 +54,13 @@ provider:
             - dynamodb:PutItem
             - dynamodb:DeleteItem
             - dynamodb:UpdateItem
+            - dynamodb:BatchGetItem
             - dynamodb:BatchWriteItem
+            - lambda:InvokeFunction
           Resource:
             - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${self:custom.ddbTableName}'
+            - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${self:custom.ddbTableName}/*'
+
 
 resources:
   Resources:
@@ -64,6 +73,8 @@ resources:
             AttributeType: S
           - AttributeName: roomId
             AttributeType: S
+          - AttributeName: chatId
+            AttributeType: S
         KeySchema:
           - AttributeName: roomType
             KeyType: HASH
@@ -72,6 +83,18 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: dmIndex
+            KeySchema:
+              - AttributeName: roomType
+                KeyType: HASH
+              - AttributeName: chatId
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
 
 functions:
   lambdaAuthorizer:
