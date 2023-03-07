@@ -2,7 +2,10 @@ service: aws-appsync-chat
 frameworkVersion: '3'
 
 custom:
-  ddbTableName: 'chatTable'
+  ddbTableName:
+    chatTable: 'chatTable'
+    userTable: 'userTable'
+    sessionTokenTable: 'sessionTokenTable'
   appSync:
     - name: 'chatRoom'
       schema: schema.api.graphql
@@ -35,6 +38,16 @@ custom:
           field: newChat
           request: "Subscription.newChat.request.vtl"
           response: "Subscription.newChat.response.vtl"
+        - dataSource: register
+          type: Mutation
+          field: register
+          request: "Mutation.register.request.vtl"
+          response: "Mutation.register.response.vtl"
+        - dataSource: login
+          type: Mutation
+          field: login
+          request: "Mutation.login.request.vtl"
+          response: "Mutation.login.response.vtl"
       functionConfigurations:
         - name: getReceiverRoom
           dataSource: ChatRoom
@@ -48,7 +61,15 @@ custom:
         - type: AMAZON_DYNAMODB
           name: ChatRoom
           config:
-            tableName: ${self:custom.ddbTableName}
+            tableName: ${self:custom.ddbTableName.chatTable}
+        - type: AWS_LAMBDA
+          name: register
+          config:
+            functionName: register
+        - type: AWS_LAMBDA
+          name: login
+          config:
+            functionName: login
 
 plugins:
   - serverless-appsync-plugin
@@ -60,7 +81,9 @@ provider:
   stage: ${opt:stage, 'dev'}
   versionFunctions: false
   environment:
-    TABLE_NAME: ${self:custom.ddbTableName}
+    CHAT_TABLE_NAME: ${self:custom.ddbTableName.chatTable}
+    USER_TABLE_NAME: ${self:custom.ddbTableName.userTable}
+    SESSION_TOKEN_TABLE_NAME: ${self:custom.ddbTableName.userTable}
   iam:
     role:
       statements:
@@ -76,16 +99,17 @@ provider:
             - dynamodb:BatchWriteItem
             - lambda:InvokeFunction
           Resource:
-            - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${self:custom.ddbTableName}'
-            - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${self:custom.ddbTableName}/*'
-
+            - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${self:custom.ddbTableName.chatTable}'
+            - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${self:custom.ddbTableName.chatTable}/*'
+            - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${self:custom.ddbTableName.userTable}'
+            - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${self:custom.ddbTableName.sessionTokenTable}'
 
 resources:
   Resources:
     chatTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:custom.ddbTableName}
+        TableName: ${self:custom.ddbTableName.chatTable}
         AttributeDefinitions:
           - AttributeName: roomType
             AttributeType: S
@@ -113,7 +137,41 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
+    userTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.ddbTableName.userTable}
+        AttributeDefinitions:
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    sessionTokenTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.ddbTableName.userTable}
+        AttributeDefinitions:
+          - AttributeName: username
+            AttributeType: S
+          - AttributeName: sessionToken
+            AttributeType: S
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+          - AttributeName: sessionToken
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 
 functions:
   lambdaAuthorizer:
     handler: functions/lambdaAuthorizer.handler
+  register:
+    handler: functions/register.handler
+  login:
+    handler: functions/login.handler

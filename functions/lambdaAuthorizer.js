@@ -2,12 +2,12 @@
 
 module.exports.handler = async (event) => {
 	try{
-		console.log(event);
 		const { authorizationToken } = event;
 		const response = {
 			isAuthorized: false,
 			resolverContext: {
-				username: ''
+				username: '',
+				groups: []
 			},
 			deniedFields: [],
 			ttlOverride: 10,

@@ -11,6 +11,8 @@ type Query {
 
 type Mutation {
   sendChat(input: MessageInput!): ChatMessage
+  register(input: RegisterForm!): registerData
+  login(input: LoginForm!): loginData
 }
 
 type Subscription {
@@ -23,6 +25,17 @@ input MessageInput {
   message: String!
 }
 
+input RegisterForm {
+  username: String!
+  password: String!
+  repeatPassword: String!
+}
+
+input LoginForm {
+  username: String!
+  password: String!
+}
+
 type ChatMessage {
   roomType: String
   roomId: String
@@ -31,6 +44,14 @@ type ChatMessage {
   message: String
   sendAt: AWSDateTime
   chatId: String
+}
+
+type registerData {
+  username: String
+}
+
+type loginData {
+  sessionToken: String!
 }
 
 type Chat {
