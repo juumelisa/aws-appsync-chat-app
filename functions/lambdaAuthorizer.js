@@ -1,28 +1,19 @@
 'use strict';
 
+const { tokenValidation } = require("../lib/ddb");
+
 module.exports.handler = async (event) => {
 	try{
 		const { authorizationToken } = event;
+		const data = await tokenValidation(authorizationToken.split(':')[0], authorizationToken.split(':')[1])
 		const response = {
-			isAuthorized: false,
+			isAuthorized: true,
 			resolverContext: {
-				username: ''
+				username: data.username
 			},
 			deniedFields: [],
 			ttlOverride: 10,
 		};
-    switch(authorizationToken){
-      case 'Miley':
-        response.isAuthorized = true;
-        response.resolverContext.username = 'Miley'
-        break;
-      case 'Sean':
-        response.isAuthorized = true;
-        response.resolverContext.username = 'Sean'
-        break;
-      default:
-        response.isAuthorized = false
-    }
 		return response;
 	}catch(err){
 		return {
