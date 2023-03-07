@@ -6,8 +6,7 @@ module.exports.handler = async (event) => {
 		const response = {
 			isAuthorized: false,
 			resolverContext: {
-				username: '',
-				groups: []
+				username: ''
 			},
 			deniedFields: [],
 			ttlOverride: 10,

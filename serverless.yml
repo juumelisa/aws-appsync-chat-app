@@ -12,6 +12,8 @@ custom:
       authenticationType: AWS_LAMBDA
       lambdaAuthorizerConfig:
         functionName: lambdaAuthorizer
+      additionalAuthenticationProviders:
+        - authenticationType: API_KEY
       mappingTemplatesLocation: mapping-templates
       mappingTemplates:
         - dataSource: ChatRoom
@@ -153,7 +155,7 @@ resources:
     sessionTokenTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:custom.ddbTableName.userTable}
+        TableName: ${self:custom.ddbTableName.sessionTokenTable}
         AttributeDefinitions:
           - AttributeName: username
             AttributeType: S

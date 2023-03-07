@@ -1,13 +1,21 @@
 'use strict';
 
+const { login } = require("../lib/ddb");
+
 module.exports.handler = async(event, context, callback) => {
   try{
-    const body = JSON.parse(event.body);
+    const sessionToken = await login(event)
     const data = {
-      sessionToken: 'abc'
+      sessionToken,
+      error: 0,
+      message: 'Success'
     }
     callback(null, data)
   }catch(err){
-    callback(err)
+    callback(null, {
+      sessionToken: '',
+      error: 1,
+      message: String(err)
+    })
   }
 }

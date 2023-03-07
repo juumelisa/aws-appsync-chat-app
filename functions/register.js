@@ -1,12 +1,21 @@
 'use strict';
 
+const { registerUser } = require("../lib/ddb");
+
 module.exports.handler = async(event, context, callback) => {
   try{
-    const body = JSON.parse(event.body);
+    await registerUser(event);
     callback(null, {
-      username: event.username
+      username: event.username,
+      error: 0,
+      message: 'Success'
     })
   }catch(err){
-    return callback(err)
+    console.log('Error: ', err);
+    return callback(null, {
+      username: '',
+      error: 1,
+      message: String(err)
+    })
   }
 }

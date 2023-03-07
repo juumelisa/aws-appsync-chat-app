@@ -12,7 +12,9 @@ type Query {
 type Mutation {
   sendChat(input: MessageInput!): ChatMessage
   register(input: RegisterForm!): registerData
+  @aws_api_key
   login(input: LoginForm!): loginData
+  @aws_api_key
 }
 
 type Subscription {
@@ -46,12 +48,16 @@ type ChatMessage {
   chatId: String
 }
 
-type registerData {
-  username: String
+type registerData @aws_api_key {
+  username: String!
+  error: Int!
+  message: String!
 }
 
-type loginData {
+type loginData @aws_api_key {
   sessionToken: String!
+  error: Int!
+  message: String!
 }
 
 type Chat {
