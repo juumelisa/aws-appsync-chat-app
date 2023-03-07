@@ -85,7 +85,7 @@ provider:
   environment:
     CHAT_TABLE_NAME: ${self:custom.ddbTableName.chatTable}
     USER_TABLE_NAME: ${self:custom.ddbTableName.userTable}
-    SESSION_TOKEN_TABLE_NAME: ${self:custom.ddbTableName.userTable}
+    SESSION_TOKEN_TABLE_NAME: ${self:custom.ddbTableName.sessionTokenTable}
   iam:
     role:
       statements:
