@@ -1,0 +1,9 @@
+#set($roomType = "room")
+{
+  "version" : "2018-05-29",
+  "operation" : "GetItem",
+  "key": {
+    "roomType": $utils.dynamodb.toDynamoDBJson($roomType),
+    "roomId": $utils.dynamodb.toDynamoDBJson($ctx.args.input.receiver)
+  }
+}

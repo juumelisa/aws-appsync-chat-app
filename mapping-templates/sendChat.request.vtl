@@ -1,0 +1,64 @@
+#set($errMessage = "User not found")
+#if(!$ctx.prev.result)
+  $utils.error($errMessage, $ctx.error.type)
+#end
+
+#set($combineSign = "#")
+#set($sender = $ctx.identity.resolverContext.username)
+#set($receiver = $ctx.args.input.receiver)
+#set($sendAt = $utils.time.nowISO8601())
+#set($roomIdB = "$sender$combineSign$sendAt")
+#set($roomIdA = "$receiver$combineSign$sendAt")
+#set($isDeleted = false)
+#set($chatIdA = "$sendAt$combineSign$receiver")
+#set($chatIdB = "$sendAt$combineSign$sender")
+#set($chatRoom = "chatRoom")
+
+{
+  "version" : "2018-05-29",
+  "operation": "BatchPutItem",
+  "tables": {
+    "chatTable": [
+      {
+        "roomType": $utils.dynamodb.toDynamoDBJson($sender),
+        "roomId": $utils.dynamodb.toDynamoDBJson($roomIdA),
+        "message": $utils.dynamodb.toDynamoDBJson($ctx.args.input.message),
+        "sender": $utils.dynamodb.toDynamoDBJson($sender),
+        "receiver": $utils.dynamodb.toDynamoDBJson($ctx.args.input.receiver),
+        "sendAt" : $utils.dynamodb.toDynamoDBJson($sendAt),
+        "chatId": $utils.dynamodb.toDynamoDBJson($chatIdA),
+        "isDeleted": $utils.dynamodb.toDynamoDBJson($isDeleted)
+      },
+      {
+        "roomType": $utils.dynamodb.toDynamoDBJson($receiver),
+        "roomId": $utils.dynamodb.toDynamoDBJson($roomIdB),
+        "message": $utils.dynamodb.toDynamoDBJson($ctx.args.input.message),
+        "sender": $utils.dynamodb.toDynamoDBJson($sender),
+        "receiver": $utils.dynamodb.toDynamoDBJson($ctx.args.input.receiver),
+        "sendAt" : $utils.dynamodb.toDynamoDBJson($sendAt),
+        "chatId": $utils.dynamodb.toDynamoDBJson($chatIdB),
+        "isDeleted": $utils.dynamodb.toDynamoDBJson($isDeleted)
+      },
+      {
+        "roomType": $utils.dynamodb.toDynamoDBJson("inbox"),
+        "roomId": $utils.dynamodb.toDynamoDBJson("$sender$combineSign$receiver"),
+        "message": $utils.dynamodb.toDynamoDBJson($ctx.args.input.message),
+        "sender": $utils.dynamodb.toDynamoDBJson($sender),
+        "receiver": $utils.dynamodb.toDynamoDBJson($ctx.args.input.receiver),
+        "sendAt" : $utils.dynamodb.toDynamoDBJson($sendAt),
+        "chatId": $utils.dynamodb.toDynamoDBJson($chatIdA),
+        "isDeleted": $utils.dynamodb.toDynamoDBJson($isDeleted)
+      },
+      {
+        "roomType": $utils.dynamodb.toDynamoDBJson("inbox"),
+        "roomId": $utils.dynamodb.toDynamoDBJson("$receiver$combineSign$sender"),
+        "message": $utils.dynamodb.toDynamoDBJson($ctx.args.input.message),
+        "sender": $utils.dynamodb.toDynamoDBJson($sender),
+        "receiver": $utils.dynamodb.toDynamoDBJson($ctx.args.input.receiver),
+        "sendAt" : $utils.dynamodb.toDynamoDBJson($sendAt),
+        "chatId": $utils.dynamodb.toDynamoDBJson($chatIdB),
+        "isDeleted": $utils.dynamodb.toDynamoDBJson($isDeleted)
+      }
+    ]
+  }
+}

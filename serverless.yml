@@ -14,6 +14,10 @@ custom:
         - dataSource: ChatRoom
           type: Mutation
           field: sendChat
+          kind: PIPELINE
+          functions:
+            - getReceiverRoom
+            - sendChat
           request: "Mutation.sendChat.request.vtl"
           response: "Mutation.sendChat.response.vtl"
         - dataSource: ChatRoom
@@ -26,6 +30,20 @@ custom:
           field: getDMList
           request: "Query.getDMList.request.vtl"
           response: "Query.getDMList.response.vtl"
+        - dataSource: ChatRoom
+          type: Subscription
+          field: newChat
+          request: "Subscription.newChat.request.vtl"
+          response: "Subscription.newChat.response.vtl"
+      functionConfigurations:
+        - name: getReceiverRoom
+          dataSource: ChatRoom
+          request: "getReceiverRoom.request.vtl"
+          response: "getReceiverRoom.response.vtl"
+        - name: sendChat
+          dataSource: ChatRoom
+          request: "sendChat.request.vtl"
+          response: "sendChat.response.vtl"
       dataSources:
         - type: AMAZON_DYNAMODB
           name: ChatRoom

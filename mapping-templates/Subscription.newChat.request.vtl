@@ -1,0 +1,16 @@
+#set($user = $context.identity.resolverContext.username)
+#if($context.args.receiver != $user)
+ $util.unauthorized()
+#end
+{
+  "version": "2017-02-28",
+  "operation" : "Query",
+  "query" : {
+    "expression": "roomType = :roomType",
+    "expressionValues" : {
+      ":roomType" : $util.dynamodb.toDynamoDBJson($user)
+    }
+  },
+  "limit": 1,
+  "scanIndexForward": false
+}
