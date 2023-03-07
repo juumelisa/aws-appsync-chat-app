@@ -11,7 +11,6 @@ module.exports.handler = async(event, context, callback) => {
       message: 'Success'
     })
   }catch(err){
-    console.log('Error: ', err);
     return callback(null, {
       username: '',
       error: 1,
